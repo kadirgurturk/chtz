@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler')
 require('express-async-handler')
 const httpStatus = require('http-status')
-require('../entities/user.model')
 const userHelper = require('../helper/user.helper')
 const ErrorResponse = require('../utilis/errorResponse')
 const {User, userRoles} = require("../entities/user.model");
