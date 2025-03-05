@@ -9,39 +9,25 @@ const {ObjectId} = require("mongodb");
 
 
 const createConversation = asyncHandler(async (req, res) => {
-    let  { userIds, messageType, chatName, photoUrl, type } = req.body;
+    let  { userIds, conversationType, chatName, photoUrl } = req.body;
 
-    if (messageType == 1 || messageType < 1 || messageType > 5)  throw new ErrorResponse(httpStatus.BAD_REQUEST, 'MessageType can be only 2, 3 or 4')
-
-    if (messageType == 2 || messageType == 3){
-        if (userIds.count != 1){
-            throw new ErrorResponse(httpStatus.BAD_REQUEST, 'you must select only one person')
-        }
-        if (photoUrl != null || photoUrl != ""){
-            throw new ErrorResponse(httpStatus.BAD_REQUEST, 'you cant select photo')
-        }
-        if (chatName != null || chatName != ""){
-            throw new ErrorResponse(httpStatus.BAD_REQUEST, 'you cant select chatName')
-        }
-    }
-
-    if (messageType == 2 || messageType == 3)
+    if (conversationType == 2 || conversationType == 3)
     {
         var receiverInfo  = await User.findOne({ _id: userIds[0] })
             .select("firstName lastName photoUrl")
             .lean();
 
         photoUrl = receiverInfo.photoUrl
-        chatName = `${user.firstName} ${user.lastName}`
+        chatName = `${receiverInfo.firstName} ${receiverInfo.lastName}`
     }
 
     const newConversation = new Conversation({
         chatName : chatName,
         createdAt : Date.now(),
         userList : userIds,
-        type : type,
+        type : conversationType,
         photoUrl : photoUrl,
-        createrId : req.user.id
+        createrId : req.user.sub
     },)
 
     await Conversation.create(newConversation);
@@ -51,7 +37,7 @@ const createConversation = asyncHandler(async (req, res) => {
 })
 
 const getConversation = asyncHandler(async (req, res) => {
-    const userId = req.user.id
+    const userId = req.user.sub
 
     var model = await Conversation.aggregate([
         {
@@ -81,11 +67,11 @@ const getConversation = asyncHandler(async (req, res) => {
 })
 
 const getConversationMessages = asyncHandler( async (req,  res) => {
-    var conversationId = new ObjectId(req.query.Id)
+    var conversationId = req.query.conversationId
 
     var model = await Conversation.aggregate([
         {
-            $match: conversationId
+            $match: { _id: new ObjectId(conversationId) }
         },
         {
             $unwind: "$messages"
@@ -104,9 +90,10 @@ const getConversationMessages = asyncHandler( async (req,  res) => {
         {
             $project: {
                 _id: 0,
-                message: "$messages.text",
+                message: "$messages.value",
                 createdAt: "$messages.createdAt",
-                senderName: { $concat: ["$senderInfo.firstName", " ", "$senderInfo.lastName"] },
+                senderName: { $concat: ["$senderInfo.firstName"] },
+                mentionId: "$messages.mentionId",
                 Type:1
             }
         },
@@ -119,3 +106,26 @@ const getConversationMessages = asyncHandler( async (req,  res) => {
 
     return res.status(400).json(model).end()
 })
+
+const createMessage = asyncHandler(
+    async (req, res) => {
+    const  {text, messageType, mentionMessageId, conversationId } = req.body;
+    const senderId = req.user.sub;
+
+    const newMessage = {
+        type: messageType,
+        value: text,
+        createdAt: new Date(),
+        mentionMessageId : mentionMessageId,
+        senderId: senderId,
+    };
+
+    await Conversation.updateOne(
+        { _id: conversationId },
+        { $push: { messages: newMessage } }
+    ).exec();
+
+    return res.status(400).end()
+})
+
+module.exports = {createConversation, getConversation, getConversationMessages, createMessage }

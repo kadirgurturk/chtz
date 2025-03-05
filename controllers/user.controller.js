@@ -38,7 +38,7 @@ const createUser = asyncHandler(async (req, res) => {
 
 
 const register = asyncHandler(async (req, res) => {
-    const { firstName, surname, email, password } = req.body;
+    const { firstName, lastName, surname, email, password } = req.body;
 
     const isEmailExist = await User.exists({email: email}).exec()
 
@@ -58,6 +58,7 @@ const register = asyncHandler(async (req, res) => {
     const newUser = new User({
         email : email,
         firstName : firstName,
+        lsatName: lastName,
         surname : surname,
         roles : [userRoles.User],
         createdAt : Date.now(),

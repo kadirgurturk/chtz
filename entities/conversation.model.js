@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {Schema} = require("mongoose");
 
 const conversationType = {
     Open: 1,
@@ -27,7 +28,7 @@ const conversationSchema = new mongoose.Schema(
         type: {
             type: Number,
             enum: conversationType,
-            default: conversationType.Text
+            default: conversationType.Private
         },
         photoUrl: String,
         createrId:{

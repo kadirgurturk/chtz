@@ -18,6 +18,7 @@ app.use('/api/user', require('./routes/user.route'))
 app.use(checktJwt.checkAuthenticate)
 
 app.use('/api/welcome', require('./routes/welcome/welcome.route'))
+app.use('/api/conversation', require('./routes/conversation.router'))
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
