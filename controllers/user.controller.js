@@ -9,7 +9,7 @@ const {User, userRoles} = require("../entities/user.model");
 
 
 const createUser = asyncHandler(async (req, res) => {
-  const { firstName, surname, email, password } = req.body;
+  const { firstName, lastName, email, password, role, status, lastSeenAvailable, notificationPermission, photo} = req.body;
 
     const saltRound = process.env.SALT_ROUNDS
 
@@ -23,12 +23,14 @@ const createUser = asyncHandler(async (req, res) => {
   const newUser = new User({
       email : email,
       firstName : firstName,
-      surname : surname,
+      lastName : lastName,
       passwordHash : hashedPassword,
-      roles : [userRoles.User],
+      status : status,
+      roles : [role],
       createdAt : Date.now(),
-      notificationPermission : true,
-      photo : "aaa",
+      notificationPermission : notificationPermission,
+      photo : photo,
+      lastSeenAvailable: lastSeenAvailable
   },)
 
     await User.create(newUser);
@@ -38,7 +40,7 @@ const createUser = asyncHandler(async (req, res) => {
 
 
 const register = asyncHandler(async (req, res) => {
-    const { firstName, lastName, surname, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
 
     const isEmailExist = await User.exists({email: email}).exec()
 
@@ -58,13 +60,10 @@ const register = asyncHandler(async (req, res) => {
     const newUser = new User({
         email : email,
         firstName : firstName,
-        lsatName: lastName,
-        surname : surname,
-        roles : [userRoles.User],
+        lastName: lastName,
         createdAt : Date.now(),
         passwordHash : hashedPassword,
         notificationPermission : true,
-        photo : "aaa",
     },)
 
     await User.create(newUser);
@@ -90,6 +89,10 @@ const login = asyncHandler(async (req, res) => {
     }
 
     throw new ErrorResponse(httpStatus.UNAUTHORIZED, 'User not Found', 'Wrong Password')
+
+})
+
+const editUser = asyncHandler(async (req, res) => {
 
 })
 

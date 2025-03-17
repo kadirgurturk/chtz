@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const userRoles = {
     User: 'User',
     Admin: 'Admin',
-    Expert: 'Expert'
 }
 
 const userStatus = {
@@ -45,7 +44,19 @@ const userSchema = new mongoose.Schema(
             type: Date,
             default: Date.now()
         },
-        photoUrl: String,
+        photoUrl: {
+            type: String,
+            trim: true,
+            default : "wle"
+        },
+        lastSeen: {
+            type: Date,
+            default: Date.now()
+        },
+        lastSeenAvailable: {
+            type: Boolean,
+            default: true
+        },
         slug: String
     }
 )

@@ -1,14 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const conversationController = require('../controllers/conversation.controller')
+const validate = require('../middlewares/validate')
+const conversationValidation = require('../utilis/validation/conversation.validation')
 
-router.post("/createConversation", conversationController.createConversation)
+router.post("/createConversation", validate(conversationValidation.createConversation), conversationController.createConversation)
 
 router.get("/getConversations", conversationController.getConversation)
 
-router.get("/getMessages", conversationController.getConversationMessages)
+router.get("/getMessages", validate(conversationValidation.getConversationMessages), conversationController.getConversationMessages)
 
-router.post("/createMessage", conversationController.createMessage)
+router.post("/createMessage", validate(conversationValidation.createMessage), conversationController.createMessage)
 
 module.exports = router
 
