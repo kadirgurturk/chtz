@@ -11,4 +11,12 @@ router.post("/login", validate(userValidation.loginValidation), userController.l
 
 router.post("/register", validate(userValidation.registerValidation), userController.register)
 
+router.get("/getUserInformation", userController.getUserInformation)
+
+router.get("/getUserHeader", userController.getUserHeader)
+
+router.post("/updateLastSeen", userController.updateLastSeen)
+
+router.get("/getUserHeader", userController.getUserHeader)
+
 module.exports = router

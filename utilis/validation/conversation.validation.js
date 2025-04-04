@@ -35,5 +35,31 @@ const createMessage = {
     })
 }
 
+const updateGroupConversationValidation = {
+    body: Joi.object().keys({
+        chatName: Joi.string()
+            .min(3)
+            .max(100)
+            .messages({
+                'string.base': 'chatName must be a string',
+                'string.min': 'chatName must be at least 3 characters',
+                'string.max': 'chatName must be at most 100 characters',
+            }),
 
-module.exports = { createMessage, getConversationMessages, createConversation}
+        photoUrl: Joi.string()
+            .uri()
+            .messages({
+                'string.uri': 'photoUrl must be a valid URL',
+            }),
+
+        status: Joi.number()
+            .valid(0, 1)
+            .messages({
+                'any.only': 'status must be either 0 (inactive) or 1 (active)',
+                'number.base': 'status must be a number',
+            })
+    })
+};
+
+
+module.exports = { createMessage, getConversationMessages, createConversation, updateGroupConversationValidation}

@@ -32,4 +32,6 @@ const loginValidation = {
     })
 }
 
+
+
 module.exports = { loginValidation, registerValidation}
