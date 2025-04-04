@@ -1,4 +1,4 @@
-const Conversation = require('../models/Conversation');
+const Conversation = require('../../entities/conversation.model');
 const asyncHandler = require('express-async-handler');
 const mongoose = require('mongoose');
 
