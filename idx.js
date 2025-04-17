@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+
 require('dotenv').config()
 const checktJwt = require('./middlewares/jwt')
 const port = process.env._PORT
 const { errorHandler, errorConverter } = require('./middlewares/error')
 
 const connectDB = require('./config/mongoDb')
-
 
 connectDB()
 
@@ -24,14 +27,12 @@ app.get('/', (req, res) => {
 })
 
 
-
-
-
-//Error Keepers
 app.use(errorConverter)
 
 app.use(errorHandler)
 
+const setupSocket = require('./services/socket');
+setupSocket(server);
 
 app.listen(port, () =>{
     console.log(`Example app listening on port ${port}`)
